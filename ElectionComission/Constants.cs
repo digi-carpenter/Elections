@@ -6,4 +6,9 @@ internal static class Constants
     {
         public const int MaxVoters = 100_000;
     }
+
+    public static class RankedChoice
+    {
+        public const int FirstRound = 0;
+    }
 }

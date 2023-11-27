@@ -4,8 +4,7 @@ using ElectionComission.Elections;
 using ElectionComission;
 using ElectionComission.Ballots;
 
-const int numVoters = 100_000;
-var voters = Voters.Create(numVoters, Candidates.Official);
+var voters = Voters.Create(Constants.Polling.MaxVoters, Candidates.Official);
 
 RunSimpleElection(voters);
 

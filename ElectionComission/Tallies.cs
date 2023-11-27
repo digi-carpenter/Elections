@@ -8,7 +8,6 @@ public static class Tallies
     /// Tallies the provided ballots of valid candidates by candidate.
     /// </summary>
     /// <param name="ballots">The ballots.</param>
-    /// <returns><see cref="ITally"/></returns>
     public static IEnumerable<ITally> TallyValidVotes(this IReadOnlyList<ISingleVoteBallot> ballots, IEnumerable<ICandidate> validCandidates)
     {
         var tallies = ballots
@@ -33,6 +32,43 @@ public static class Tallies
                 .Candidate;
     }
 
+    /// <summary>
+    /// Tallies the first round votes.
+    /// </summary>
+    /// <param name="ballots">The ballots.</param>
+    /// <param name="currentCandidates">The current candidates.</param>
+    public static IEnumerable<ITally> TallyFirstRoundVotes(this IReadOnlyList<IRankedBallot> ballots, IEnumerable<ICandidate> currentCandidates)
+    {
+        var tallies = ballots
+                .Select(ballot => ballot.Votes[Constants.RankedChoice.FirstRound])
+                .GroupBy(vote => vote.Candidate)
+                .Select(
+                    voteGroup => new CandidateTally(voteGroup.Key, voteGroup.Count()))
+                .ForSpecificCandidates(currentCandidates);
+
+        return tallies;
+    }
+
+    /// <summary>
+    /// Tallies the votes for additional ranked rounds.
+    /// </summary>
+    /// <param name="ballots">The ballots.</param>
+    /// <param name="previousRound">The previous ranked round.</param>
+    public static IEnumerable<ITally> TallyAdditionalRoundVotes(this IReadOnlyList<IRankedBallot> ballots, RankedChoiceRound previousRound)
+    {
+        var currentRound = previousRound.RoundNumber + 1;
+        var currentCandidates = previousRound.RemainingCandidates;
+
+        return ballots
+                .Where(ballot => ballot.Votes.Count > currentRound)
+                .Select(ballot => ballot.Votes[currentRound])
+                .GroupBy(vote => vote.Candidate)
+                .Select(
+                    voteGroup => new CandidateTally(voteGroup.Key, voteGroup.Count()))
+                .ForSpecificCandidates(currentCandidates)
+                .WithPreviousRoundResults(previousRound);
+    }
+
 	/// <summary>
     /// Removes invalid candidates from the collection of tallies.
     /// </summary>
@@ -44,6 +80,22 @@ public static class Tallies
                             tally => tally.Candidate,
                             candidate => candidate,
                             (tally, candidate) => tally);
+    }
+
+    /// <summary>
+    /// Adds the previous round results to the current round.
+    /// </summary>
+    /// <param name="tallies">The tallies.</param>
+    /// <param name="previousRound">The previous round.</param>
+    private static IEnumerable<ITally> WithPreviousRoundResults(this IEnumerable<ITally> tallies, RankedChoiceRound previousRound)
+    {
+        return tallies.Join(previousRound.TalliedVotes,
+                            currentRoundTally => currentRoundTally.Candidate,
+                            previousRoundTally => previousRoundTally.Candidate,
+                            (currentRoundTally, previousRoundTally) =>
+                            {
+                                return new CandidateTally(currentRoundTally.Candidate, (currentRoundTally.Votes + previousRoundTally.Votes));
+                            });
     }
 
     private record CandidateTally(ICandidate Candidate, int Votes) : ITally;
