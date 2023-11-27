@@ -1,6 +1,6 @@
-﻿using Elections.Interfaces;
+using ElectionComission.Interfaces;
 
-namespace Elections.Elections;
+namespace ElectionComission.Elections;
 
 public class PluralityElection : IElection<ISingleVoteBallot>
 {

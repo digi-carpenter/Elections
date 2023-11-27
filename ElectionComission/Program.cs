@@ -1,8 +1,8 @@
-using Elections;
-using Elections.Interfaces;
-using Elections.Ballots;
-using Elections.Elections;
 using System.Diagnostics;
+using ElectionComission.Interfaces;
+using ElectionComission.Elections;
+using ElectionComission;
+using ElectionComission.Ballots;
 
 const int numVoters = 100_000;
 var voters = Voters.Create(numVoters, Candidates.Official);

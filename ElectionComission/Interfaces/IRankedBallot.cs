@@ -1,4 +1,4 @@
-﻿namespace Elections.Interfaces;
+﻿namespace ElectionComission.Interfaces;
 
 public interface IRankedBallot : IBallot
 {

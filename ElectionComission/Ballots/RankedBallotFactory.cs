@@ -1,6 +1,7 @@
-﻿using Elections.Interfaces;
+﻿using ElectionComission;
+using ElectionComission.Interfaces;
 
-namespace Elections.Ballots;
+namespace ElectionComission.Ballots;
 
 public static class RankedBallotFactory
 {

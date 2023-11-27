@@ -1,4 +1,4 @@
-namespace Elections.Interfaces;
+namespace ElectionComission.Interfaces;
 
 /// <summary>
 /// Maintains a tally of votes for a candidate.

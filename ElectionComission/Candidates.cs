@@ -1,6 +1,6 @@
-﻿using Elections.Interfaces;
+﻿using ElectionComission.Interfaces;
 
-namespace Elections;
+namespace ElectionComission;
 
 public static class Candidates
 {
