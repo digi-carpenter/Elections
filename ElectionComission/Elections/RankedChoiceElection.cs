@@ -1,23 +1,9 @@
-﻿using ElectionComission.Interfaces;
+using ElectionComission.Interfaces;
 
 namespace ElectionComission.Elections;
 
 public sealed class RankedChoiceElection : IElection<IRankedBallot>
 {
-    private static IReadOnlyList<ITally> FilteredFirstRoundTally(IReadOnlyList<IRankedBallot> ballots, IReadOnlyList<ICandidate> candidates)
-    {
-        return ballots
-            .TallyFirstRoundVotes(candidates)
-            .ToList();
-    }
-
-    private static IReadOnlyList<ITally> CombinedRoundTally(IReadOnlyList<IRankedBallot> ballots, RankedChoiceRound previousRound)
-    {
-        return ballots
-            .TallyAdditionalRoundVotes(previousRound)
-            .ToList();
-    }
-
     public ICandidate Run(IReadOnlyList<IRankedBallot> ballots, IReadOnlyList<ICandidate> candidates)
     {
         var maxRounds = candidates.Count - 1;
@@ -42,6 +28,20 @@ public sealed class RankedChoiceElection : IElection<IRankedBallot>
             }
         }
 
-        throw new NotImplementedException();
+        throw new TiedRankedElectionException($"A conclusive winner could not be determined after {maxRounds} rounds.");
+    }
+
+    private static IReadOnlyList<ITally> FilteredFirstRoundTally(IReadOnlyList<IRankedBallot> ballots, IReadOnlyList<ICandidate> candidates)
+    {
+        return ballots
+            .TallyFirstRoundVotes(candidates)
+            .ToList();
+    }
+
+    private static IReadOnlyList<ITally> CombinedRoundTally(IReadOnlyList<IRankedBallot> ballots, RankedChoiceRound previousRound)
+    {
+        return ballots
+            .TallyAdditionalRoundVotes(previousRound)
+            .ToList();
     }
 }
